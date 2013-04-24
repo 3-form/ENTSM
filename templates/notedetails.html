@@ -1,0 +1,12 @@
+{% extends "layout.html" %}
+{% block content %}
+    <p>Confirm your notebook selections and parse/update test data by pressiong the button below</p>
+    <div id="tree">
+        <ul>
+        {% for note in notes %}
+            <li><input type="checkbox" name="note" value="{{note}}"><span><img src="https://sandbox.evernote.com/shard/{{session.shardId}}/thm/note/{{note}}?auth={{session.identifier}}&size=150"></span>
+        {% endfor %}
+        </ul>
+    </div>
+    <input type="submit" class="button" value="Process Note">
+{% endblock %}0

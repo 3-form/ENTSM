@@ -1,0 +1,51 @@
+<!doctype html>
+<title>Evernote Template Thing</title>
+<link rel=stylesheet type=text/css href="{{ url_for('static', filename='style.css')}}">
+<!-- include jQuery and jQueryUI libraries -->
+<script type="text/javascript" src="http://code.jquery.com/jquery-1.9.1.js"></script>
+<script type="text/javascript" src="http://code.jquery.com/ui/1.10.1/jquery-ui.js"></script>
+<link rel="stylesheet" type="text/css" href="http://code.jquery.com/ui/1.10.1/themes/base/jquery-ui.css"/>
+
+<!-- include checkboxTree plugin -->
+<script type="text/javascript" src="{{ url_for('static', filename='jquery.tree.min.js')}}"></script>
+<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='jquery.tree.min.css')}}" />
+
+<!-- initialize checkboxTree plugin -->
+<script type="text/javascript">
+    //<!--
+    $(document).ready(function() {
+        $('#tree').tree({
+            onCheck: { node: 'expand' }, 
+            onUncheck: { node: 'collapse' }
+        });
+    });
+//-->
+</script>
+
+<div class=page>
+    <h1>EN THING</h1>
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+        {% for message in messages %}
+        <div class=flash>{{message}}</div>
+        {% endfor %}
+    {% endif %}
+    {% endwith %}
+    {% if error_list %}
+        {% for error in error_list %}
+        <p class=error><strong>Error:</strong> {{ error }}</p>
+        {% endfor %}
+    {% endif %}
+<div class=metanav>
+    {% if not session.logged_in %}
+    <a href="{{url_for('login')}}">log in</a>
+    {% else %}
+    <a href="{{url_for('index')}}">main</a>
+    <a href="{{url_for('settings')}}">settings</a>
+    {% if session.admin %}
+        <a href="{{url_for('admin')}}">admin</a>
+    {% endif %}
+    <a href="{{url_for('logout')}}">log out</a>
+    {% endif %}
+</div>
+{% block body %}{% endblock %}

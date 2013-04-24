@@ -1,0 +1,27 @@
+{% extends "header.html" %}
+{% block body %}
+<h2>Register</h2>
+{% if error %}<p class=error><strong>Error:</strong> {{ error }}</p>{% endif %}
+<form action="{{url_for('register_user')}}" method=post>
+    <dl>
+        <dt>First Name:</dt>
+        <dd><input type=text name=first_name></dd>
+        <dt>Last Name:</dt>
+        <dd><input type=text name=last_name></dd>
+        <dt>Username:</dt>
+        <dd><input type=text name=username></dd>
+        <dt>Password:</dt>
+        <dd><input type=password name=password></dd>
+        <dt>Lead Tester</dt>
+        <dd><select name=lead>
+                <option value=None>No Lead</option>
+            {% for user in authorized_users %}
+                <option value={{user.id}}>{{user.first_name}} {{user.last_name}}</option>
+            {% endfor %}  
+            </select>
+        </dd>
+        <br />
+        <dd><input type=submit value=Register class=button></dd>
+    </dl>
+</form>
+{% endblock %}

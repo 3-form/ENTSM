@@ -1,0 +1,29 @@
+{% extends "layout.html" %}
+{% block content %}
+<form action="{{url_for('settings')}}" method="post">
+    <dl>
+        <dt>First Name</dt>
+        <dd><input type="text" name="first_name" value="{{session.first_name}}"></dd>
+        <dt>Last Name</dt>
+        <dd><input type="text" name="last_name" value="{{session.last_name}}"></dd>
+        <dt>Change Password</dt>
+        <dd><input type="password" name="password"></dd>
+        <dt>Remove Association</dt>
+        <dd><input type="checkbox" name="auth" value="auth">Yes</dd>
+        <dt>Lead</dt>
+        <dd><select name=lead>
+                <option value=None>No Lead</option>
+            {% for user in authorized_users %}
+                {% if lead == user.id %}
+                <option value="{{user.id}}" selected>{{user.first_name}} {{user.last_name}}</option>
+                {% else %}
+                <option value="{{user.id}}">{{user.first_name}} {{user.last_name}}</option>
+                {% endif %}
+            {% endfor %}  
+            </select>
+        </dd>
+        <dt>Make Changes to account?</dt>
+        <dd><input type="submit" value="Yes"></dd>
+    </dl>    
+</form>
+{% endblock %}

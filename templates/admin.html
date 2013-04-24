@@ -1,0 +1,50 @@
+{% extends "layout.html" %}
+{% block content %}
+<form action="{{url_for('admin')}}" method="post">
+    <dl>
+        <dt>
+            <dd>Action: 
+             <select name=action>
+                <option value=null>Select an Option</option>
+                <option value=delete>Delete</option>
+                <option value=admin>Make Admin</option>
+                <option value=noadmin>Remove Admin</option>
+                <option value=auth>Remove Authorization</option>
+                <option value=pwd>Reset Password</option>
+            </select>
+            <input type="submit" class="button" value="Perform Action"></dd>
+        </dt>
+    <dt>
+        <dd><table border=1>
+        <tr>
+            <th>Box</th>
+            <th>First</th>
+            <th>Last</th>
+            <th>Authorized</th>
+            <th>Admin</th>
+            <th>Lead</th>
+        </tr>
+        {% for user in users %}
+        <tr>
+            <td><input type="checkbox" name="user" value="{{user.username}}"></td>
+            <td>{{user.first_name}}</td>
+            <td>{{user.last_name}}</td>
+            {% if user.authorized %}
+            <td>True</td>
+            {% else %}
+            <td></td>
+            {% endif %}
+            {% if user.isadmin %}
+            <td>True</td>
+            {% else %}
+            <td></td>
+            {% endif %}
+            <td>{{user.lead_first}} {{user.lead_last}}</td>
+        </tr>
+        {% endfor %}
+        </tr>
+    </table></dd>
+    </dt>
+    </dl>
+</form>
+{% endblock %}

@@ -1,0 +1,10 @@
+SCMBranch=Quality Assurance
+SCMRepository=Quality Assurance/onenote runreport/session2xml
+SCMMainlineUUID={a627a217-1d23-4a06-92b8-485469f71535}
+SCMBranchRepositoryID=2174
+__init__.py;0;1;1321077138;
+__init__.pyc;746057860;1;1321084924;
+writexml.py;415047283;1;1321570601;
+writexml.pyc;2334269399;1;1321572980;
+session2xml.py;1096121868;6;1330711283;
+session2xml.pyc;1194677006;2;1330711289;
