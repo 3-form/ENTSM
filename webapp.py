@@ -268,6 +268,7 @@ def index():
                 flash("Test Time: %s" %en.times['T'])
                 flash("Session Length: %s" %en.session_length)
                 en.export_xml("%s.xml" %title)
+                en.export_xml(os.path.join(app.config['UPLOADED_FILE_DEST'], "%s.xml" %title))
             except Exception as e:
                 error_list.append("ERROR parsing out data from note %s. Exception: [%s]" %(title, e))
     return render_template('main.html',
@@ -583,6 +584,7 @@ def upload():
                 content = m.group(2) 
             flash(new_note(content=content, title=upload_file.filename))
             upload_file.save(os.path.join(app.config['UPLOADED_FILE_DEST'], filename))
+            #upload_file.save(os.path.join(app.config['UPLOADED_FILE_DEST'], filename))
         return redirect(url_for('index'))
     else:
         return render_template('upload.html') 
