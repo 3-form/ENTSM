@@ -577,6 +577,7 @@ def upload():
             filename = upload_file.filename
             content = upload_file.stream.getvalue()
             new_note(content=content, title=upload_file.filename)
+            # CHECK IF THIS NOTE WAS EXPORTED BY THE DESKTOP CLIENT AND IF SO STRIP OUT COMPONENTS
             upload_file.save(os.path.join(app.config['UPLOADED_FILE_DEST'], filename))
         flash('upload successful')
         return redirect(url_for('index'))
