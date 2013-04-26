@@ -576,10 +576,13 @@ def upload():
         if upload_file and allowed_file(upload_file.filename):
             filename = upload_file.filename
             content = upload_file.stream.getvalue()
-            new_note(content=content, title=upload_file.filename)
             # CHECK IF THIS NOTE WAS EXPORTED BY THE DESKTOP CLIENT AND IF SO STRIP OUT COMPONENTS
+            pattern = re.compile('(.*?!\[CDATA\[)(.*?<\/en-note>)(.*?\]\]><\/content>.*)', re.DOTALL)
+            m = pattern.search(content)
+            if m is not None and len(m.group(2)) > 0:
+                content = m.group(2) 
+            flash(new_note(content=content, title=upload_file.filename))
             upload_file.save(os.path.join(app.config['UPLOADED_FILE_DEST'], filename))
-        flash('upload successful')
         return redirect(url_for('index'))
     else:
         return render_template('upload.html') 
