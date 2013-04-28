@@ -582,6 +582,8 @@ def upload():
             if m is not None and len(m.group(2)) > 0:
                 content = m.group(2) 
             flash(new_note(content=content, title=upload_file.filename))
+            with open(os.path.join(app.config['UPLOADED_FILE_DEST'], filename), 'w') as f:
+                f.write(content)
             #upload_file.save(os.path.join(app.config['UPLOADED_FILE_DEST'], filename))
         return redirect(url_for('index'))
     else:
