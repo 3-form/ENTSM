@@ -1,0 +1,39 @@
+{% extends "reports/report_header.html" %}
+{% block body %}
+<script>
+function SelectController($scope) {
+        // Data taken from KnockoutJs cart example
+        $scope.sampleProductCategories = [
+        {% for team in teams %}
+          {
+            "products": [
+            {% for month in months[team] %}
+              {
+                "name": "{{month}}",
+              },
+              {% endfor %}
+            ],
+            "name": "{{team}}"
+          },
+          {% endfor %}
+        ];
+    }
+</script>
+<style>
+.ng-invalid { border: 1px solid red; } 
+body { font-family: Arial,Helvetica,sans-serif; }
+body, td, th { font-size: 14px; margin: 0; }
+table { border-collapse: separate; border-spacing: 2px; display: table; margin-bottom: 0; margin-top: 0; -moz-box-sizing: border-box; text-indent: 0; }
+a:link, a:visited, a:hover { color: #5D6DB6; text-decoration: none; }
+.error { color: red; }
+</style>
+<form action="{{url_for('reports')}}" method="post">
+<div ng-app ng-controller="SelectController">
+  <select name="project" ng-model="category" ng-options="c.name for c in sampleProductCategories"></select>
+  <select name="month" ng-model="categoryItem" ng-options="p.name for p in category.products"></select>
+  <hr />
+  <input type="submit" value="render report">
+</form>
+</div>
+
+{% endblock %}

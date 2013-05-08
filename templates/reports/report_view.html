@@ -1,0 +1,29 @@
+{% extends "reports/report_header.html" %}
+{% block body %}
+{% if xml_list %}
+{% for xml in xml_list %}
+    <p>I am XML</p>
+    <ul>
+    <li>{{xml.title}}</li>
+    <li>{{xml.month}}</li>
+    <li>{{xml.build}}</li>
+    <li>{{xml.testers}}</li>
+    <li>{{xml.session_type}}</li>
+    <li>{{xml.session_length}}</li>
+    <li>{{xml.b_time}}</li>
+    <li>{{xml.s_time}}</li>
+    <li>{{xml.t_time}}</li>
+    {% if xml.session_count.i_count > 0 %}
+    <li>Issue Count = {{xml.session_count.i_count}}</li>
+    {% endif %}
+    {% if xml.session_count.b_count > 0 %}
+    <li> Bug Count = {{xml.session_count.b_count}}</li>
+    {% endif %}
+    {% if xml.session_count.o_count > 0 %}
+    <li>Opportunity Count = {{xml.session_count.o_count}}</li>
+    {% endif %}
+{% endfor %}
+{% endif %}
+
+{% endblock %}
+

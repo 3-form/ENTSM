@@ -1,6 +1,7 @@
 from datetime import datetime as dt
 from lxml import etree
 from StringIO import StringIO
+import os
 
 class ENXML_MISSING_ID(Exception):
     def __init__(self, value):
@@ -79,13 +80,13 @@ class ENXML():
             error = 'build'
             build = self.root.xpath(".//td[contains(@style, 'id: build')]")[0]
             if build.text is not None:
-                self.build = build.text.strip()
+                self.build = ((build.text.strip()).replace(' ', '_')).lower()
             else:
                 self.build = ''
             error = 'team'
             team = self.root.xpath(".//td[contains(@style, 'id: team')]")[0]
             if team.text is not None:
-                self.team = team.text.strip()
+                self.team = ((team.text.strip()).replace(' ', '_')).lower()
             else:
                 self.team = ''
             # ACCEPTANCE CRITERIA
@@ -168,7 +169,8 @@ class ENXML():
                 a_link = None
             bug_name = bug.find(".//td[2]")
             name = bug_name.xpath("string()").strip()
-            bug_list.append({'num':num, 'link':a_link, 'name':name})
+            if len(name) > 0 or len(num) > 0:
+                bug_list.append({'num':num, 'link':a_link, 'name':name})
         return bug_list
     
     def assign_time(self, time_type, time_value):
@@ -286,7 +288,7 @@ class ENXML():
                                    encoding="UTF-8", 
                                    doctype=self.doctype))
             
-    def export_xml(self, filename):
+    def export_xml(self, directory, filename):
         """Exports the xml to a simpler format"""
         root = etree.Element('session')
         etree.SubElement(root, 'title').text=self.title
@@ -335,7 +337,18 @@ class ENXML():
         etree.SubElement(counts, 'o_count').text=str(onum)
         etree.SubElement(counts, 'b_count').text=str(len(self.bugs))
         tree = etree.ElementTree(root)
-        with open(filename, 'w') as f:
+        # OPEN OR CREATE DIRECTORY SUB TREE BASED ON TEAM
+        # THEN RELEASE (MONTH VALUE)
+        # CHECK THAT DIRECTORY EXISTS, THEN TEAM THEN BUILD/MONTH/RELEASE
+        full_path = os.path.join(directory, self.team, self.month)
+        try:
+            os.makedirs(full_path)
+        except OSError:
+            if os.path.exists(full_path):
+                pass
+            else:
+                raise
+        with open(os.path.join(full_path, filename), 'w') as f:
             f.write(etree.tostring(tree, 
                                    pretty_print=True, 
                                    xml_declaration=True, 

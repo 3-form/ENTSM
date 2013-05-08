@@ -51,6 +51,7 @@ IP='127.0.0.1'
 PORT = 5000
 
 app = Flask(__name__)
+app.jinja_env.add_extension('jinja2.ext.do')
 app.config.from_object(__name__)
 
 def allowed_file(filename):
@@ -209,9 +210,9 @@ def before_request():
 def teardown_request(exception):
     g.db.close()
 
-####################
+##################
 # WEB NAVIGATION
-####################
+##################
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -267,7 +268,7 @@ def index():
                 flash("Setup Time: %s" %en.times['S'])
                 flash("Test Time: %s" %en.times['T'])
                 flash("Session Length: %s" %en.session_length)
-                en.export_xml(os.path.join(app.config['UPLOADED_FILE_DEST'], "%s.xml" %title))
+                en.export_xml(app.config['UPLOADED_FILE_DEST'], "%s.xml" %title)
             except Exception as e:
                 error_list.append("ERROR parsing out data from note %s. Exception: [%s]" %(title, e))
     return render_template('main.html',
@@ -588,6 +589,49 @@ def upload():
         return redirect(url_for('index'))
     else:
         return render_template('upload.html') 
+
+@app.route('/reports', methods=['GET', 'POST'])
+def reports():
+    """ 
+    Creates Report view of all uploaded xml files according to month and release
+    """
+    # THIS DATA PULLED FROM FILE STRUCTURE
+    import os
+    uploads = app.config['UPLOADED_FILE_DEST']
+    teams = os.walk(uploads).next()[1]
+    months = {}
+    for team in teams:
+        months[team] = os.walk(os.path.join(uploads, team)).next()[1]
+    #projects = ['360', 'control_panel', 'site_intercept']
+    #months = {'360':['04','06'], 'control_panel':['04', '05','06'], 'site_intercept':['04']}
+    if request.method == 'POST':
+        team = int(request.form['project'])
+        month = int(request.form['month'])
+        path = os.path.join(teams[team], months[teams[team]][month])
+        return redirect('reports/report_view/%s' %path)
+        # GET XML Elements from PATH to create an array of XML that can be passed into the client. 
+        # return render_template('reports/report_view.html', xml_list = xml_list)
+    return render_template('reports/report_index.html', teams = teams, months=months)
+
+@app.route('/reports/report_view/')
+@app.route('/reports/report_view/<team>/<month>')
+def report_view(team=None, month=None):
+    xml_list = []
+    from lxml import objectify
+    try:
+        if team is not None and month is not None:
+            # GET THE PATH TO ALL THE XML FILES
+            path = os.path.join(app.config['UPLOADED_FILE_DEST'], team, month)
+            # CREATE A LIST OF ALL THE XML FILES
+            file_list = os.listdir(path)
+            for filename in file_list:
+                tree = objectify.parse(os.path.join(path, filename))
+                root = tree.getroot()
+                xml_list.append(root)
+    except IOError:
+        # IF THERE IS A PARSE ERROR DO NOT APPEND TO THE LIST
+        pass
+    return render_template('reports/report_view.html', xml_list=xml_list)    
     
 if __name__ == '__main__':
     app.secret_key = APP_SECRET_KEY
