@@ -46,8 +46,8 @@ SCHEMA = 'schema.sql'
 UPLOADED_FILE_DEST="upload"
 ALLOWED_EXTENSIONS = set(['xml', 'enex'])
 
-#IP = '10.1.50.32'
-IP='127.0.0.1'
+IP = '10.1.50.32'
+#IP='127.0.0.1'
 PORT = 5000
 
 app = Flask(__name__)
