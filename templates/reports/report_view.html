@@ -1,29 +1,59 @@
 {% extends "reports/report_header.html" %}
 {% block body %}
 {% if xml_list %}
+<h1>{{team}} {{month}}</h1>
+<table border=1>
+    <tbody>
+        <tr>
+            <th>Build</th>
+            <th>Charter</th>
+            <th>Bug Time</th>
+            <th>Setup Time</th>
+            <th>Testing Time</th>
+            <th>Bugs Found</th>
+            <th>Issues Found</th>
+            <th>Oportunties Found</th>
+            <th>Session Type</th>
+            <th>Session Lenth</th>
+            <th>Status</th>
+        </tr>
 {% for xml in xml_list %}
-    <p>I am XML</p>
-    <ul>
-    <li>{{xml.title}}</li>
-    <li>{{xml.month}}</li>
-    <li>{{xml.build}}</li>
-    <li>{{xml.testers}}</li>
-    <li>{{xml.session_type}}</li>
-    <li>{{xml.session_length}}</li>
-    <li>{{xml.b_time}}</li>
-    <li>{{xml.s_time}}</li>
-    <li>{{xml.t_time}}</li>
-    {% if xml.session_count.i_count > 0 %}
-    <li>Issue Count = {{xml.session_count.i_count}}</li>
-    {% endif %}
-    {% if xml.session_count.b_count > 0 %}
-    <li> Bug Count = {{xml.session_count.b_count}}</li>
-    {% endif %}
-    {% if xml.session_count.o_count > 0 %}
-    <li>Opportunity Count = {{xml.session_count.o_count}}</li>
-    {% endif %}
+    <tr>
+        <td>{{xml.build}}</td>
+        <td>{{xml.title}}</td>
+        <td>{{xml.b_time}}</td>
+        <td>{{xml.s_time}}</td>
+        <td>{{xml.t_time}}</td>
+        <td>
+            {% if xml.session_count.b_count > 0 %}<a href="#">{{xml.session_count.b_count}}</a>
+            {% else %}
+            {{xml.session_count.b_count}}
+            {% endif %} 
+        </td>
+        <td>
+            {% if xml.session_count.i_count > 0 %}<a href="#">{{xml.session_count.i_count}}</a>
+            {% else %}
+            {{xml.session_count.i_count}}
+            {% endif %} 
+        </td>
+        <td>
+            {% if xml.session_count.o_count > 0 %}<a href="#">{{xml.session_count.o_count}}</a>
+            {% else %}
+            {{xml.session_count.o_count}}
+            {% endif %} 
+        </td>
+        <td>
+            {{xml.session_type}}
+        </td>
+        <td>
+            {{xml.session_length}}
+        </td> 
+        <td>
+        </td>
+    </tr>
 {% endfor %}
 {% endif %}
-
+    </tbody>
+</table>
 {% endblock %}
 

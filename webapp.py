@@ -631,7 +631,7 @@ def report_view(team=None, month=None):
     except IOError:
         # IF THERE IS A PARSE ERROR DO NOT APPEND TO THE LIST
         pass
-    return render_template('reports/report_view.html', xml_list=xml_list)    
+    return render_template('reports/report_view.html', xml_list=xml_list, team=team, month=month)    
     
 if __name__ == '__main__':
     app.secret_key = APP_SECRET_KEY
