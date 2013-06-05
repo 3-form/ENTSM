@@ -42,8 +42,10 @@
     {% else %}
     <a href="{{url_for('index')}}">main</a>
     <a href="{{url_for('settings')}}">settings</a>
+    <a href="{{url_for('reports')}}">reports</a>
     {% if session.admin %}
         <a href="{{url_for('admin')}}">admin</a>
+        <a href="{{url_for('reports')}}"
     {% endif %}
     <a href="{{url_for('logout')}}">log out</a>
     {% endif %}
