@@ -32,11 +32,18 @@ APP_SECRET_KEY = \
 EN_CONSUMER_KEY = 'zible'
 EN_CONSUMER_SECRET = '367c429f031417b3'
 
-EN_REQUEST_TOKEN_URL = 'https://sandbox.evernote.com/oauth'
-EN_ACCESS_TOKEN_URL = 'https://sandbox.evernote.com/oauth'
-EN_AUTHORIZE_URL = 'https://sandbox.evernote.com/OAuth.action'
+# SANDBOX SETTINGS
+#EN_REQUEST_TOKEN_URL = 'https://sandbox.evernote.com/oauth'
+#EN_ACCESS_TOKEN_URL = 'https://sandbox.evernote.com/oauth'
+#EN_AUTHORIZE_URL = 'https://sandbox.evernote.com/OAuth.action'
 
-EN_HOST = "sandbox.evernote.com"
+# PRODUCTION SETTINGS
+EN_REQUEST_TOKEN_URL = 'https://www.evernote.com/oauth'
+EN_ACCESS_TOKEN_URL = 'https://www.evernote.com/oauth'
+EN_AUTHORIZE_URL = 'https://www.evernote.com/OAuth.action'
+
+#EN_HOST = "sandbox.evernote.com"
+EN_HOST = "www.evernote.com"
 EN_USERSTORE_URIBASE = "https://" + EN_HOST + "/edam/user"
 EN_NOTESTORE_URIBASE = "https://" + EN_HOST + "/edam/note/"
 
