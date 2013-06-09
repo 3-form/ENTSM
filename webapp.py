@@ -135,17 +135,33 @@ def get_lead(username):
                     last_name=row[2])
     return lead
 
-def get_notebooks():
-    """ Creates a list of notebooks and notes metadata"""
+def get_notebook_list():
+    """ Creates a list of notebook title/guids"""
     authToken = session.get('identifier')
-    noteStore = get_notestore()
+    noteStore = get_notestore()    
     notebooks = noteStore.listNotebooks(authToken)
     notebook_list = []
     for notebook in notebooks:
+        notebook_list.append({'name':notebook.name, 'guid':notebook.guid})
+    return notebook_list
+
+def get_notebooks(guid_list=None):
+    """ Creates a list of notebooks and notes metadata"""
+    authToken = session.get('identifier')
+    noteStore = get_notestore()
+    if guid_list is not None:
+        notebooks = []
+        for guid in guid_list:
+            notebooks.append(noteStore.getNotebook(authToken, guid))
+    else:
+        notebooks = noteStore.listNotebooks(authToken)
+    notebook_list = []
+    for notebook in notebooks:
+        #notebook_list.append({'name':notebook.name, 'guid':notebook.guid})
         notebook_dict = {'name':notebook.name, 'guid':notebook.guid}
         notebook_dict['notes'] = get_note_metadata(notebook_dict['guid'])
         notebook_dict['session_id'] = session.get('shardId')
-        notebook_list.append(notebook_dict)   
+        notebook_list.append(notebook_dict) 
     return notebook_list
 
 def get_note_metadata(guid):
@@ -155,12 +171,12 @@ def get_note_metadata(guid):
     nb_filter = NoteStore.NoteFilter()
     nb_filter.ascending = True
     nb_spec = NoteStore.NotesMetadataResultSpec(includeTitle=True,
-                                                includeContentLength=True,
-                                                includeNotebookGuid=True, 
-                                                includeTagGuids=True, 
-                                                includeAttributes=True,
-                                                includeLargestResourceMime=True,
-                                                includeLargestResourceSize=True)
+                                                #includeContentLength=True,
+                                                includeNotebookGuid=True,) 
+                                                #includeTagGuids=True, 
+                                                #includeAttributes=True,
+                                                #includeLargestResourceMime=True,
+                                                #includeLargestResourceSize=True)
     nb_filter.notebookGuid = guid
     note_list = noteStore.findNotesMetadata(authToken, nb_filter, 0, 100, nb_spec)
     if len(note_list.notes) != note_list.totalNotes:
@@ -231,7 +247,16 @@ def index():
     lead = get_lead(session.get('username'))
     notebooks = []
     if session.get('identifier'):
-        notebooks = get_notebooks()          
+        # CHECK AND SEE IF USER HAS SELECTED NOTEBOOKS
+        cur = g.db.execute("SELECT notebook_ids FROM users where username=?", 
+                           [session.get('username')])
+        row = cur.fetchone()
+        if row[0] is not None:
+            guid_list = row[0].split(',')
+            flash("Getting Notebooks and Notes")
+            notebooks = get_notebooks(guid_list) 
+        else:
+            return redirect(url_for('configure', guid_list=None))         
     # POST REQUESTS
     if request.method=='POST':
         error_list = []
@@ -324,6 +349,32 @@ def admin():
                              [user])
         g.db.commit()
         return redirect(url_for('admin'))
+
+@app.route('/configure', methods=['GET', 'POST'])
+def configure(guid_list=None):
+    if request.method=='POST':
+        guid_list = request.form.getlist('notebook')
+        g.db.execute("UPDATE users SET notebook_ids=? where username=?",
+                     [','.join(guid_list),
+                      session.get('username')])
+        g.db.commit()
+        return redirect(url_for('configure'))
+    else:    
+        notebook_list=get_notebook_list()
+        if guid_list is None:
+            # CHECK AND SEE IF USER HAS SELECTED NOTEBOOKS
+            cur = g.db.execute("SELECT notebook_ids FROM users where username=?", 
+                               [session.get('username')])
+            row = cur.fetchone()
+            if row[0] is not None:
+                guid_list = row[0].split(',')
+        if guid_list is not None:
+            for notebook in notebook_list:
+                for guid in guid_list:
+                    if guid == notebook['guid']:
+                        notebook['selected'] = True
+                        break    
+    return render_template('configure.html', notebooks=notebook_list)
 
 @app.route('/settings', methods=['GET', 'POST'])
 def settings():

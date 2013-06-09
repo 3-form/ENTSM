@@ -8,6 +8,7 @@ create table users (
   authorized integer,
   identifier string,
   shard_id string,
+  notebook_ids string,
   isadmin integer,
   leadID integer
 );
