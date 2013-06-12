@@ -225,6 +225,15 @@ def update_note(content, guid, title):
         return "EDAMNNotFoundException: Invalid parent notebook GUID"
     return 'Note %s Successfully parsed and updated' %title
 
+def valid_email(email):
+    """Validates the email to matching common email patterns"""
+    pattern = re.compile('^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$', re.IGNORECASE)
+    matches = re.findall(pattern, email)
+    if len(matches) <= 0:
+        return False
+    else:
+        return True
+
 @app.before_request
 def before_request():
     g.db = connect_db()
@@ -389,7 +398,9 @@ def settings():
     elif request.method== 'POST':
         # UPDATE USER INFO WITH: ALL VALUES FROM THE FORM
         leadID = request.form['lead'] if request.form['lead'] != 'None' else 'Null'
-        sql_str = "UPDATE users SET first_name=?, last_name=?, password=?"
+        sql_str = "UPDATE users SET first_name=?, last_name=?"
+        if request.form['password'] != '':
+            sql_str += ", password={}".format(request.form['password'])
         if request.form['lead'] == 'None':
             sql_str +=  ", leadID=NULL"
         else:
@@ -400,11 +411,12 @@ def settings():
         g.db.execute(sql_str, 
                      [request.form['first_name'],
                       request.form['last_name'],
-                      request.form['password'],
                       session.get('username')])
         g.db.commit()
         authorized_users = get_authorized_users(session.get('username'))
         flash('Settings Updated Successfully')
+        session['first_name'] = request.form['first_name']
+        session['last_name'] = request.form['last_name']
         return redirect(url_for('settings', lead=leadID))
                  
 @app.route('/login', methods=['GET', 'POST'])
@@ -462,30 +474,42 @@ def register_user():
     error = None
     authorized_users = get_authorized_users()
     if request.method == 'POST':
-        cur = g.db.execute("select username from users where username=?",
-                           [request.form['username']])
-        username = [dict(username=row[0]) for row in cur.fetchall()]
-        if len(username) > 0:
-            error = 'Username already exists'
-        elif len(request.form['password']) <= 0:
-            error = 'Password cannot be blank'
+        if len(request.form['username'].strip()) <= 0:
+            error = 'Username cannot be blank'
         else:
-            if request.form['lead'] == 'None':
-                lead = None
+            cur = g.db.execute("select username from users where username=?",
+                               [request.form['username'].strip()])
+            username = [dict(username=row[0]) for row in cur.fetchall()]
+            if len(username) > 0:
+                error = 'Username already exists'
+            elif len(request.form['password'].strip()) <= 0:
+                error = 'Password cannot be blank'
+            elif not valid_email(request.form['email_address']):
+                error='Invalid Email Address'
             else:
-                lead = request.form['lead']
-            g.db.execute('insert into users (username, password, first_name, last_name, leadID) values (?, ?, ?, ?, ?)', 
-                 [request.form['username'], 
-                  request.form['password'],
-                  request.form['first_name'],
-                  request.form['last_name'],
-                  lead])
-            g.db.commit()
-            flash("New User was successfully registered")
-            session['logged_in'] = True
-            session['first_name'] = request.form['first_name']
-            session['username'] = request.form['username']
-            return redirect(url_for('login'))
+                if request.form['lead'] == 'None':
+                    lead = None
+                else:
+                    lead = request.form['lead']
+                if request.form['use_email'] == 'True':
+                    use_email = True
+                else:
+                    use_email = False
+                g.db.execute('insert into users (username,password,first_name,last_name,leadID,email_address,use_email) values (?,?,?,?,?,?,?)', 
+                     [request.form['username'], 
+                      request.form['password'],
+                      request.form['first_name'],
+                      request.form['last_name'],
+                      lead,
+                      request.form['email_address'],
+                      use_email])
+                g.db.commit()
+                flash("New User was successfully registered")
+                session['logged_in'] = True
+                session['first_name'] = request.form['first_name']
+                session['last_name'] = request.form['last_name']
+                session['username'] = request.form['username']
+                return redirect(url_for('login'))
     return render_template('register.html', 
                            error=error, 
                            authorized_users=authorized_users)

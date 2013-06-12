@@ -347,7 +347,7 @@ class ENXML():
             if os.path.exists(full_path):
                 pass
             else:
-                raise
+                raise Exception
         with open(os.path.join(full_path, filename), 'w') as f:
             f.write(etree.tostring(tree, 
                                    pretty_print=True, 

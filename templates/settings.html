@@ -2,13 +2,17 @@
 {% block content %}
 <form action="{{url_for('settings')}}" method="post">
     <dl>
-        <dt>First Name</dt>
+        <dt>Change First Name</dt>
         <dd><input type="text" name="first_name" value="{{session.first_name}}"></dd>
-        <dt>Last Name</dt>
+        <dt>Change Last Name</dt>
         <dd><input type="text" name="last_name" value="{{session.last_name}}"></dd>
         <dt>Change Password</dt>
         <dd><input type="password" name="password"></dd>
-        <dt>Remove Association</dt>
+        <dt>Change Email Address</dt>
+        <dd><input type="text" name="email_address" value="{{session.email_address}}"></dd>
+        <dt>Send Email After Parsing Note</dt>
+        <dd><input type="checkbox" name="use_email" value="True">Yes</dd>
+        <dt>Remove Evernote App Association</dt>
         <dd><input type="checkbox" name="auth" value="auth">Yes</dd>
         <dt>Lead</dt>
         <dd><select name=lead>
@@ -23,7 +27,7 @@
             </select>
         </dd>
         <dt>Make Changes to account?</dt>
-        <dd><input type="submit" value="Yes"></dd>
+        <dd><input type="submit" value="Yes" class=button></dd>
     </dl>    
 </form>
 {% endblock %}

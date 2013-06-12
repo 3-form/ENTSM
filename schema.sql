@@ -5,6 +5,8 @@ create table users (
   password string not null,
   first_name string not null,
   last_name string not null,
+  email_address string not null,
+  use_email string,
   authorized integer,
   identifier string,
   shard_id string,
@@ -13,4 +15,4 @@ create table users (
   leadID integer
 );
 
-insert into users (username, password, first_name, last_name, isadmin) values ('Admin', 'Admin', 'Admin', 'Admin', 1);
+insert into users (username, password, first_name, last_name, email_address, isadmin) values ('Admin', 'Admin', 'Admin', 'Admin', 'Admin', 1);
