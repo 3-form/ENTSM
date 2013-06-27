@@ -34,9 +34,10 @@ def send_email(en, email_server, to):
         for issue in issues:
             body +='<li>%s</li>' %issue
         body +='</ul>'
-    note = body + en.tostring()
-    note = note.encode("ascii" , "ignore")
-    msg_body = MIMEText(note, 'html')
+    body = body.encode("ascii", "ignore")
+    en_string = en.tostring().decode("utf8")
+    en_string = en_string.encode("ascii", "ignore")
+    msg_body = MIMEText(body + en_string, 'html')
     msg.attach(msg_body)
     # SEND THE MAIL
     s = smtplib.SMTP(email_server)
