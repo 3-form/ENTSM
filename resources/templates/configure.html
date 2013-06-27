@@ -1,0 +1,21 @@
+{% extends "layout.html" %}
+{% block content %}
+{% if error %}<p class=error><strong>Error:</strong> {{ error }}</p>{% endif %}
+{% if session.auth_token %}
+<p>Below is a list of notebooks, select the notebook that contains your test session</p>
+    <form action="{{url_for('configure')}}" method="post">
+        <div id="tree">
+            <ul>
+            {% for notebook in notebooks %}
+                <li><input type="checkbox" name="notebook" value="{{notebook.guid}}" {% if notebook.selected %}checked="checked"{% endif %}><span>{{notebook.name}}</span>
+            {% endfor %}
+            </ul>
+        </div>
+        <input type="submit" class="button" value="Save Notebooks">
+        <input type="button" class="button" value="Return" onClick="document.location.href='{{url_for('index')}}';">
+    </form>        
+{% else %}
+    <p>Please authorize your account to allow the Evernote Test Session Application access</p>
+    <a href="{{url_for('auth_start')}}">Authorize</a>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,39 @@
+{% extends "layout.html" %}
+{% block content %}
+<form action="{{url_for('settings')}}" method="post">
+    <dl>
+        <dt>Change First Name</dt>
+        <dd><input type="text" name="first_name" value="{{user.first_name}}"></dd>
+        <dt>Change Last Name</dt>
+        <dd><input type="text" name="last_name" value="{{user.last_name}}"></dd>
+        <dt>Change Password</dt>
+        <dd><input type="password" name="password" value="{{user.password}}"></dd>
+        <dt>Change Email Address</dt>
+        <dd><input type="text" name="email_address" value="{{user.email_address}}"></dd>
+        <dt>Send Email After Parsing Note</dt>
+        {% if user.use_email == 1 %}
+            <dd><input type="radio" name="use_email" value="1" checked>Yes
+                 <input type="radio" name="use_email" value="0">No</dd>
+        {% else %}
+            <dd><input type="radio" name="use_email" value="1" >Yes
+                 <input type="radio" name="use_email" value="0" checked>No</dd>
+        {% endif %}
+        <dt>Remove Evernote App Association</dt>
+        <dd><input type="checkbox" name="auth" value="auth">Yes</dd>
+        <dt>Lead</dt>
+        <dd><select name=lead>
+                <option value=None>No Lead</option>
+            {% for user in authorized_users %}
+                {% if lead == user.id %}
+                <option value="{{user.id}}" selected>{{user.first_name}} {{user.last_name}}</option>
+                {% else %}
+                <option value="{{user.id}}">{{user.first_name}} {{user.last_name}}</option>
+                {% endif %}
+            {% endfor %}  
+            </select>
+        </dd>
+        <dt>Make Changes to account?</dt>
+        <dd><input type="submit" value="Yes" class=button></dd>
+    </dl>    
+</form>
+{% endblock %}
