@@ -77,8 +77,12 @@ def index():
                 en = EN(note, doctype=m.group(1))
                 # BREAK OUT TABLES
                 en.break_out_tables()
-                en.set_activity_type('O')
-                en.set_activity_type('I')
+                try:
+                    en.set_activity_type('O')
+                    en.set_activity_type('I')
+                except:
+                    error_list.append("Using an old Template, update your template in the future")
+                    error_list.append("Unable to set Issues and Activities within the note")
                 flash(update_note(session.get('auth_token'),
                                   session.get('shard_id'),
                                   en.tostring(), 

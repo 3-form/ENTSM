@@ -272,7 +272,7 @@ class ENXML():
         """ sets the time of the activity type """
         time_type = "{}_time".format(time_type.lower())
         el = self.root.xpath(".//td[contains(@style, 'id: {}')]".format(time_type))[0]
-        el.text = str(time_val)
+        el.text = ''.join((str(time_val), '%'))
         
     def set_session_type(self, session_type, session_length):
         """ Finds the value and sets the session type and length """
